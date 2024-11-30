@@ -1,0 +1,19 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@layer base {
+	html,
+	body {
+		@apply m-0 h-full bg-[#02060F];
+	}
+}
+
+@layer components {
+  .bar-icon {
+    @apply size-7 mb-5 stroke-1 stroke-gray-600 hover:stroke-[#f0f2ff];
+  }
+  .bar-icon-active {
+    @apply stroke-[#f0f2ff]
+  }
+}
