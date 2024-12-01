@@ -37,3 +37,8 @@ error ParticipantLimitReached(uint limit);
 /// @param id The message ID that was attempted to be accessed but does not exist
 /// @custom:error Triggered when a message lookup fails due to non-existent message ID
 error NoSuchMessage(uint32 id);
+/// @notice Custom error thrown when attempting to access a closed conversation
+/// @dev This error is raised when trying to access an already closed conversation
+/// @param id The conversation ID that was attempted to be accessed
+/// @custom:error Triggered when there is an attempt to access a close conversation
+error ConversationClosed(uint32 id);

@@ -2,71 +2,86 @@
 
 pragma solidity ^0.8.8;
 
-import "./Conversation.sol" as conv;
-import "./errors.sol";
+import './Conversation.sol' as conv;
+import './errors.sol';
 
 contract ChatApp {
-    uint32 private _conversationID = 0;
-    mapping(uint32 => conv.Conversation) public conversations;
+	uint32 private _conversationID = 0;
+	mapping(uint32 => conv.Conversation) conversations;
+  mapping(address => uint32[]) userConversations;
+  mapping(uint32 => address) users;
 
-    event PaticipantJoined(uint32 id, address _participant, uint timestamp);
-    event PaticipantLeave(uint32 id, address _participant, uint timestamp);
+	event PaticipantJoinedEvent(uint32 id, address _participant, uint timestamp);
+	event PaticipantLeaveEvent(uint32 id, address _participant, uint timestamp);
 
-    function createConveration(
-        string memory name,
-        conv.ConversationType cType,
-        bool isPrivate
-    ) public returns (bool) {
-        conversations[_conversationID] = new conv.Conversation(
-            name,
-            cType,
-            isPrivate
-        );
+	function createConveration(
+		string memory name,
+		conv.ConversationType cType,
+		bool isPrivate
+	) external returns (bool) {
+		conversations[_conversationID] = new conv.Conversation(name, cType, isPrivate);
 
-        _conversationID++;
-        return true;
+		_conversationID++;
+		return true;
+	}
+
+  function getConversations() view external returns (conv.Conversation[] memory) {
+    conv.Conversation[] memory convs = new conv.Conversation[](0);
+    uint c = 0;
+
+    for (uint32 i = 0; i < _conversationID; i++) {
+      conv.Conversation conversation = conversations[i];
+      if (!conversation.isClosed() && conversation.exist()) {
+        convs[c++] = conversation;
+      }
     }
+    return convs;
+  }
 
-    function joinConversation(uint32 id, address participant) public {
-        conv.Conversation c = conversations[id];
-        require(c.exist(), ConversationNotExist(id));
-        require(
-            c.currentParticipants() <= c.maxParticipants(),
-            ParticipantLimitReached(c.maxParticipants())
-        );
-        require(
-            !c.checkParticipant(participant),
-            AddressInConversation(participant)
-        );
-        require(!c.isClosed(), "Conversation is closed");
+  function getConversations(address user) view public returns (conv.Conversation[] memory) {
+    conv.Conversation[] memory convs = new conv.Conversation[](0);
+    uint c = 0;
+    uint32[] memory userConv = userConversations[user];
+    
 
-        c.addParticipant(participant);
+    for (uint32 i = 0; i < userConv.length; i++) {
+      conv.Conversation conversation = conversations[userConv[i]];
+      if (!conversation.isClosed() && conversation.exist()) {
+        convs[c++] = conversation;
+      }
     }
+    return convs;
+  }
 
-    function leaveConversation(uint32 id, address participant) public {
-        conv.Conversation c = conversations[id];
-        require(c.exist(), ConversationNotExist(id));
-        require(
-            c.checkParticipant(participant),
-            AddressNotInConversation(participant)
-        );
+	function joinConversation(uint32 id, address participant) external {
+		conv.Conversation c = conversations[id];
+		require(c.exist(), ConversationNotExist(id));
+		require(
+			c.currentParticipants() <= c.maxParticipants(),
+			ParticipantLimitReached(c.maxParticipants())
+		);
+		require(!c.checkParticipant(participant), AddressInConversation(participant));
+		require(!c.isClosed(), 'Conversation is closed');
 
-        c.removeParticipant(participant);
-    }
+		c.addParticipant(participant);
+		emit PaticipantJoinedEvent(id, participant, block.timestamp);
+	}
 
-    function deleteConversation(uint32 id) public {
-        conv.Conversation c = conversations[id];
-        require(
-            c.exist(),
-            ConversationNotExist(id)
-        );
-        require(
-            c.isAdmin(msg.sender),
-            AddressNotAdmin(msg.sender)
-        );
+	function leaveConversation(uint32 id, address participant) external {
+		conv.Conversation c = conversations[id];
+		require(c.exist(), ConversationNotExist(id));
+		require(c.checkParticipant(participant), AddressNotInConversation(participant));
 
-        c.close();
-    }
+		c.removeParticipant(participant);
+		emit PaticipantLeaveEvent(id, participant, block.timestamp);
+	}
 
-    function editConversation() public returns (bool) {}
+	function deleteConversation(uint32 id) external {
+		conv.Conversation c = conversations[id];
+		require(c.exist(), ConversationNotExist(id));
+		require(c.isAdmin(msg.sender), AddressNotAdmin(msg.sender));
+
+    delete conversations[id];
+		c.close();
+	}
 }
