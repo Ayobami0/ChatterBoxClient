@@ -11,7 +11,7 @@
 </script>
 
 <aside class="rounded flex flex-col flex-0 items-center pb-2 w-9">
-	<a href="/nav" class="mb-9 mt-1 text-white">APP ICON</a>
+	<a href="/" class="mb-9 mt-1 text-white">APP ICON</a>
 	<a href="/" onclick={() => setActivePage('messages')} aria-label="Messages">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +27,7 @@
 			/>
 		</svg>
 	</a>
-	<a href="/nav" onclick={() => setActivePage('people')} aria-label="People">
+	<a href="/people" onclick={() => setActivePage('people')} aria-label="People">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
@@ -42,7 +42,7 @@
 			/>
 		</svg>
 	</a>
-	<a href="/nav" aria-label="Settings" onclick={() => setActivePage('settings')}>
+	<a href="/settings" aria-label="Settings" onclick={() => setActivePage('settings')}>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
@@ -63,7 +63,7 @@
 		</svg>
 	</a>
 	<div class="flex-1"></div>
-	<a href="/nav" aria-label="Add Conversation"
+	<a href="/add" aria-label="Add Conversation"
 		><svg
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
@@ -74,7 +74,7 @@
 			<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
 		</svg>
 	</a>
-	<a href="/nav" class="mb-3">
+	<a href="/profile" class="mb-3">
 		<figure>
 			<img class="rounded-full" src="https://picsum.photos/200" alt="" />
 		</figure>
