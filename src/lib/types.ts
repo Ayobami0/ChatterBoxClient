@@ -5,13 +5,16 @@ type Message = {
   roomId: string,
   timeSent: Date,
   content: string,
+  attachmentUrl?: string
 }
 
 type Room = {
   id: string,
   name: string,
-  latestMessage: Message,
+  latestMessage?: Message,
+  imageUrl?: string,
   type: RoomType
+  desc?: string,
 }
 
 
